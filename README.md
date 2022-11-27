@@ -1,4 +1,4 @@
-# hello-world
+# blog-vue
 
 ## Project setup
 ```

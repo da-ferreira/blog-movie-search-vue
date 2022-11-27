@@ -1,45 +1,89 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-      </div>
-    </v-app-bar>
+    <!-- <Header /> -->
 
     <v-main class="ma-3">
-      <div class="d-flex flex-row flex-wrap justify-center">
-        <div v-for="number in 10" :key="number">
-          <PostCard :title="title" :description="description" :thumbnail="thumbnail" />
+      <v-row justify="center">
+        <v-col cols="12" md="4">
+          <v-text-field
+            color="success"
+            label="Search for movies, directors, actors and more"
+            append-icon="mdi-magnify"
+            v-model="search"
+            @keyup="lazySearch()"
+            :loading="loading"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+
+      <template v-if="movies.length > 0">
+        <h4 class="grey--text text-center">{{ movies.length }} results</h4>
+        <div class="d-flex flex-row flex-wrap justify-center">
+
+          <div v-for="movie in movies" :key="movie.id">
+            <PostCard
+              :title="movie.title"
+              :description="movie.description"
+              :thumbnail="movie.image === '' ? require('./assets/placeholder.png') : movie.image"
+            />
+          </div>
         </div>
-      </div>
+      </template>
+
+      <template v-else>
+        <div class="grey--text text-center">
+          <h1 class="font-weight-bold">No results</h1>
+          <v-icon x-large>mdi-movie-open-off-outline</v-icon>
+        </div>
+      </template>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import PostCard from './components/PostCard.vue';
+// import Header from './views/layout/Header.vue';
 
 export default {
   name: 'App',
 
   components: {
     PostCard,
+    // Header,
   },
 
   data() {
     return {
-      title: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit.',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus fugiat id nobis, voluptates accusamus dolor maxime nisi, cupiditate iusto rerum repellat minima quis excepturi dignissimos ratione tempora vel ipsam. Rem.',
-      thumbnail: 'https://picsum.photos/1200',
+      search: '',
+      timeout: null,
+      movies: [],
+      loading: false,
     };
+  },
+
+  methods: {
+    lazySearch() {
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => this.searchMovies(), 800);
+    },
+
+    searchMovies() {
+      if (this.search === '') {
+        this.movies = [];
+        return;
+      }
+
+      this.loading = true;
+      const url = `https://imdb-api.com/en/API/Search/${process.env.VUE_APP_IMDB_API_KEY}/${this.search}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.movies = data.results;
+          this.loading = false;
+        })
+        .catch((err) => console.error(err));
+    },
   },
 };
 </script>
