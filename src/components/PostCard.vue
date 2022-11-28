@@ -1,20 +1,45 @@
 <template>
-  <v-card elevation="2" outlined max-width="20rem" min-height="28rem" class="ma-2">
-    <v-img :src="thumbnail" height="250"></v-img>
-    <v-card-title>{{ title }}</v-card-title>
-    <v-card-text>
-      <p class="line-clamp-two-lines">{{ description }}</p>
-    </v-card-text>
+  <div>
+    <v-card outlined max-width="20rem" min-height="28rem" class="ma-2" elevation="2">
+      <v-hover v-slot="{ hover }">
+        <v-img :src="thumbnail" height="250" width="320" :class="{ 'hover-image': hover }">
+          <div class="text-center">
+            <v-btn icon v-if="hover" class="show-btn" @click="expandImage = true">
+              <v-icon x-large> mdi-arrow-expand-all </v-icon>
+            </v-btn>
+          </div>
+        </v-img>
+      </v-hover>
 
-    <v-card-actions>
-      <v-btn outlined rounded text>Leia mais</v-btn>
-    </v-card-actions>
-  </v-card>
+      <v-card-title class="title">
+        <span class="line-clamp-2">{{ title }}</span>
+      </v-card-title>
+      <v-card-text class="description">
+        <span class="line-clamp-3">{{ description }}</span>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn outlined rounded text>Mais detalhes</v-btn>
+      </v-card-actions>
+    </v-card>
+
+    <div v-if="expandImage" class="expand-image">
+      <v-img :src="thumbnail" contain height="100vh" class="pa-1"></v-img>
+      <v-btn class="close-expand-image" icon @click="expandImage = false">
+        <v-icon x-large>mdi-close</v-icon>
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'PostCard',
+
+  data() {
+    return {
+      expandImage: false,
+    };
+  },
 
   props: {
     title: {
@@ -52,5 +77,36 @@ export default {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   white-space: normal;
+}
+
+.description {
+  height: 4rem;
+}
+
+.title {
+  height: 6rem;
+}
+
+.hover-image {
+  filter: grayscale(100%);
+}
+
+.show-btn {
+  color: rgba(255, 255, 255, 0.9) !important;
+  margin-top: 6rem;
+}
+
+.expand-image {
+  height: 100vh;
+  z-index: 5;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(50, 50, 50, 0.9);
+}
+
+.close-expand-image {
+  position: relative;
+  left: 96%;
+  bottom: 98%;
 }
 </style>
