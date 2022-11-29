@@ -18,6 +18,7 @@
       <div class="d-flex flex-row flex-wrap justify-center">
         <div v-for="movie in movies" :key="movie.id">
           <PostCard
+            :id="movie.id"
             :title="movie.title"
             :description="movie.description"
             :thumbnail="movie.image === '' ? require('../../assets/placeholder.png') : movie.image"
