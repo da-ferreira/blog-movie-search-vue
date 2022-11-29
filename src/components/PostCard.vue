@@ -18,7 +18,9 @@
         <span class="line-clamp-3">{{ description }}</span>
       </v-card-text>
       <v-card-actions>
-        <v-btn outlined rounded text>Mais detalhes</v-btn>
+        <router-link :to="{ name: 'showMovie', params: { id } }">
+          <v-btn outlined rounded text>Mais detalhes</v-btn>
+        </router-link>
       </v-card-actions>
     </v-card>
 
@@ -42,6 +44,11 @@ export default {
   },
 
   props: {
+    id: {
+      type: String,
+      required: true,
+    },
+
     title: {
       type: String,
       required: true,
@@ -108,5 +115,9 @@ export default {
   position: relative;
   left: 96%;
   bottom: 98%;
+}
+
+a {
+  text-decoration: none;
 }
 </style>
