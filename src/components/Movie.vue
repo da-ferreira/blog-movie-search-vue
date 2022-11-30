@@ -1,11 +1,11 @@
 <template>
   <v-container class="grey lighten-5">
-    <v-row no-gutters>
-      <v-col sm="6" cols="12">
+    <v-row>
+      <v-col sm="4" cols="12">
         <v-img :src="movie.image" contain height="95vh" alt="Movie image"></v-img>
       </v-col>
 
-      <v-col sm="6" cols="12">
+      <v-col sm="8" cols="12">
         <v-card outlined tile>
           <v-card-title>{{ movie.fullTitle }}</v-card-title>
           <v-card-text>
