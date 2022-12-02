@@ -1,11 +1,11 @@
 <template>
-  <v-container class="grey lighten-5">
+  <v-container fluid class="grey lighten-5">
     <v-row>
-      <v-col sm="4" cols="12">
-        <v-img :src="movie.image" contain height="95vh" alt="Movie image"></v-img>
+      <v-col sm="7" cols="6" md="4" min-width="60%">
+        <v-img :src="movie.image" height="95vh" alt="Movie image"></v-img>
       </v-col>
 
-      <v-col sm="8" cols="12">
+      <v-col sm="5" cols="auto" md="8">
         <v-card outlined tile>
           <v-card-title>{{ movie.fullTitle }}</v-card-title>
           <v-card-text>
