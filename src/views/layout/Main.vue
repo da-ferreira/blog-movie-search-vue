@@ -4,7 +4,7 @@
       <v-col cols="12" md="4">
         <v-text-field
           color="success"
-          label="Search for movies, directors, actors and more"
+          label="Busque por filmes"
           prepend-icon="mdi-magnify"
           v-model="search"
           @keyup="lazySearch()"
@@ -20,9 +20,10 @@
           <PostCard
             :id="movie.id"
             :title="movie.title"
-            :description="movie.description"
-            :thumbnail="movie.image === '' ? require('../../assets/placeholder.png') : movie.image"
+            :description="movie.overview"
+            :thumbnail="getThumbnail(movie.poster_path)"
           />
+          <!-- :thumbnail="movie.image === '' ? require('../../assets/placeholder.png') : movie.image" -->
         </div>
       </div>
     </template>
@@ -58,25 +59,53 @@ export default {
   methods: {
     lazySearch() {
       clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => this.searchMovies(), 800);
+      this.timeout = setTimeout(
+        () => this.$router.push({ name: 'home', query: { q: this.search } }),
+        800
+      );
     },
 
-    searchMovies() {
-      if (this.search === '') {
+    searchMovies(search) {
+      if (!search) {
         this.movies = [];
         return;
       }
 
+      this.search = search;
+
+      const queryString = new URLSearchParams({
+        api_key: process.env.VUE_APP_TMDB_API_KEY,
+        language: 'pt-BR',
+        query: this.search,
+      });
+
+      const url = `${this.$apiBaseUrl}/search/movie?${queryString.toString()}`;
       this.loading = true;
-      const url = `https://imdb-api.com/en/API/Search/${process.env.VUE_APP_IMDB_API_KEY}/${this.search}`;
 
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
           this.movies = data.results;
           this.loading = false;
+          console.log(data);
         })
         .catch((err) => console.error(err));
+    },
+
+    getThumbnail(path) {
+      return path
+        ? `${this.$apiImageBaseUrl}/original${path}`
+        : require('../../assets/placeholder.png');
+    },
+  },
+
+  created() {
+    this.searchMovies(this.$route.query.q);
+  },
+
+  watch: {
+    '$route.query.q'(value) {
+      this.searchMovies(value);
     },
   },
 };
