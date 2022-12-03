@@ -10,7 +10,14 @@
 
         <div class="overflow-y-auto cast">
           <div class="d-flex flex-row flex-wrap">
-            <v-card v-for="person in cast" :key="person.id" class="ma-2" width="150" height="auto">
+            <v-card
+              v-for="person in cast"
+              :key="person.id"
+              class="ma-2"
+              width="150"
+              height="auto"
+              @click="personDetails(person.id)"
+            >
               <v-img height="150" width="150" :src="image(person.profile_path)"></v-img>
               <v-card-text class="text-center pa-2">
                 <h4>{{ person.name }}</h4>
@@ -32,7 +39,7 @@
 
           <v-card-text>
             <p>Duração: {{ runtime(movie.runtime) }}</p>
-            <p>Data de lançamento: {{ releaseDate(movie.release_date) }}</p>
+            <p>Data de lançamento: {{ formatDate(movie.release_date) }}</p>
             <p>Produzido por: {{ madeBy(movie.production_companies) }}</p>
             <p>Bilheteria: {{ revenue(movie.revenue) }}</p>
             <v-chip outlined v-for="genre in movie.genres" :key="genre.id">{{ genre.name }}</v-chip>
@@ -40,6 +47,25 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="person.dialog" max-width="700">
+      <v-card :loading="person.loading">
+        <v-card-title>{{ person.details.name }}</v-card-title>
+        <v-card-text class="text-justify">
+          <p>{{ person.details.biography }}</p>
+          <p v-show="person.details.birthday">
+            Nasceu em: {{ formatDate(person.details.birthday) }} | {{ age(person.details.birthday) }} anos
+          </p>
+          <p v-show="person.details.deathday">
+            Morreu em: {{ formatDate(person.details.deathday) }}
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="person.dialog = false">Fechar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -51,6 +77,12 @@ export default {
     return {
       movie: {},
       cast: [],
+      person: {
+        loading: false,
+        dialog: false,
+        image: '',
+        details: {},
+      },
     };
   },
 
@@ -61,8 +93,12 @@ export default {
         : require('../assets/placeholder-profile.jpg');
     },
 
-    releaseDate(date) {
+    formatDate(date) {
       return new Date(date).toLocaleDateString();
+    },
+
+    age(birthday) {
+      return (new Date()).getFullYear() - Number(birthday?.split('-')[0]);
     },
 
     runtime(minutes) {
@@ -78,6 +114,26 @@ export default {
 
     revenue(revenue) {
       return `${revenue}`.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    },
+
+    personDetails(id) {
+      this.person.dialog = true;
+      this.person.loading = true;
+
+      const queryString = new URLSearchParams({
+        api_key: process.env.VUE_APP_TMDB_API_KEY,
+        language: 'pt-BR',
+      });
+
+      const urlPersonDetails = `${this.$apiBaseUrl}/person/${id}?${queryString.toString()}`;
+
+      fetch(urlPersonDetails)
+        .then((response) => response.json())
+        .then((data) => {
+          this.person.details = data;
+          this.person.loading = false;
+          console.log(data);
+        });
     },
   },
 
@@ -102,7 +158,6 @@ export default {
       .then((response) => response.json())
       .then((data) => {
         this.cast = data.cast;
-        console.log(this.cast);
       });
   },
 };
