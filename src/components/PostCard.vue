@@ -5,7 +5,8 @@
         <v-img :src="thumbnail" height="250" width="320" :class="{ 'hover-image': hover }">
           <div class="text-center">
             <v-btn icon v-if="hover" class="show-btn" @click="expandImage = true">
-              <v-icon x-large> mdi-arrow-expand-all </v-icon>
+              <v-icon> mdi-arrow-expand-all </v-icon>
+              <span class="ml-2">Expandir</span>
             </v-btn>
           </div>
         </v-img>
@@ -96,10 +97,12 @@ export default {
 
 .hover-image {
   filter: grayscale(100%);
+  /* filter: blur(0.2rem); */
+
 }
 
 .show-btn {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: rgba(255, 255, 255, 1) !important;
   margin-top: 6rem;
 }
 
