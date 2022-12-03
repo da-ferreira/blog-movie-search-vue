@@ -8,13 +8,13 @@
           prepend-icon="mdi-magnify"
           v-model="search"
           @keyup="lazySearch()"
-          :loading="loading"
+          :loading="loadingSearch"
         ></v-text-field>
       </v-col>
     </v-row>
 
-    <template v-if="movies.length > 0">
-      <h4 class="grey--text text-center">{{ movies.length }} results</h4>
+    <template v-if="totalResults > 0">
+      <h4 class="grey--text text-center">{{ totalResults }} results</h4>
       <div class="d-flex flex-row flex-wrap justify-center">
         <div v-for="movie in movies" :key="movie.id">
           <PostCard
@@ -23,8 +23,18 @@
             :description="movie.overview"
             :thumbnail="getThumbnail(movie.poster_path)"
           />
-          <!-- :thumbnail="movie.image === '' ? require('../../assets/placeholder.png') : movie.image" -->
         </div>
+      </div>
+
+      <div class="text-center my-3" v-show="currentPage < totalPages">
+        <v-btn
+          outlined
+          rounded
+          :loading="loadingMoreResults"
+          :icon="loadingMoreResults"
+          @click="moreResults()"
+          >Mais resultados</v-btn
+        >
       </div>
     </template>
 
@@ -52,7 +62,11 @@ export default {
       search: '',
       timeout: null,
       movies: [],
-      loading: false,
+      loadingSearch: false,
+      loadingMoreResults: false,
+      currentPage: 0,
+      totalPages: 0,
+      totalResults: 0,
     };
   },
 
@@ -65,7 +79,7 @@ export default {
       );
     },
 
-    searchMovies(search) {
+    searchMovies(search, page = 1) {
       if (!search) {
         this.movies = [];
         return;
@@ -77,17 +91,22 @@ export default {
         api_key: process.env.VUE_APP_TMDB_API_KEY,
         language: 'pt-BR',
         query: this.search,
+        page,
       });
 
       const url = `${this.$apiBaseUrl}/search/movie?${queryString.toString()}`;
-      this.loading = true;
+      
+      this.loadingSearch = true;
 
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          this.movies = data.results;
-          this.loading = false;
-          console.log(data);
+          this.movies = this.movies.concat(data.results);
+          this.totalPages = data.total_pages;
+          this.currentPage = data.page;
+          this.totalResults = data.total_results;
+          this.loadingSearch = false;
+          this.loadingMoreResults = false;
         })
         .catch((err) => console.error(err));
     },
@@ -97,6 +116,11 @@ export default {
         ? `${this.$apiImageBaseUrl}/original${path}`
         : require('../../assets/placeholder.png');
     },
+
+    moreResults() {
+      this.loadingMoreResults = true;
+      this.searchMovies(this.search, this.currentPage + 1);
+    },
   },
 
   created() {
@@ -105,6 +129,7 @@ export default {
 
   watch: {
     '$route.query.q'(value) {
+      this.movies = [];
       this.searchMovies(value);
     },
   },
