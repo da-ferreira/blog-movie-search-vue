@@ -97,8 +97,6 @@ export default {
 
 .hover-image {
   filter: grayscale(100%);
-  /* filter: blur(0.2rem); */
-
 }
 
 .show-btn {

@@ -14,7 +14,7 @@
     </v-row>
 
     <template v-if="totalResults > 0">
-      <h4 class="grey--text text-center">{{ totalResults }} results</h4>
+      <h4 class="grey--text text-center">{{ totalResults }} filmes</h4>
       <div class="d-flex flex-row flex-wrap justify-center">
         <div v-for="movie in movies" :key="movie.id">
           <PostCard
@@ -40,7 +40,7 @@
 
     <template v-else>
       <div class="grey--text text-center">
-        <h1 class="font-weight-bold">No results</h1>
+        <h1 class="font-weight-bold">Sem resultados</h1>
         <v-icon x-large>mdi-movie-open-off-outline</v-icon>
       </div>
     </template>

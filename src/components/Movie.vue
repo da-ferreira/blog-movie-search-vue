@@ -2,14 +2,19 @@
   <v-container fluid class="grey lighten-5">
     <v-row>
       <v-col sm="7" cols="12" md="4" min-width="60%">
-        <v-img :src="image(movie.poster_path)" height="95vh" alt="Movie image"></v-img>
+        <v-img
+          :src="image(movie.poster_path)"
+          height="95vh"
+          alt="Movie image"
+          class="rounded-lg"
+        ></v-img>
       </v-col>
 
       <v-col sm="5" cols="12" md="8">
         <h2 class="ma-2">Elenco do filme</h2>
 
         <div class="overflow-y-auto cast">
-          <div class="d-flex flex-row flex-wrap">
+          <div class="d-flex flex-row flex-wrap justify-center">
             <v-card
               v-for="person in cast"
               :key="person.id"
@@ -29,21 +34,42 @@
       </v-col>
 
       <v-col>
-        <v-card outlined tile>
-          <v-card-title>{{ movie.title }}</v-card-title>
-          <v-card-text>
-            <p>{{ movie.overview }}</p>
-          </v-card-text>
+        <v-card outlined tile class="rounded-lg">
+          <v-row>
+            <v-col cols="12" md="8">
+              <v-card-title>{{ movie.title }}</v-card-title>
+              <v-card-text>
+                <p>{{ movie.overview }}</p>
+              </v-card-text>
 
-          <v-divider class="mx-4"></v-divider>
+              <v-card-text>
+                <p><strong>Duração: </strong> {{ runtime(movie.runtime) }}</p>
+                <p><strong>Data de lançamento: </strong>{{ formatDate(movie.release_date) }}</p>
+                <p><strong>Produzido por: </strong>{{ madeBy(movie.production_companies) }}</p>
+                <p><strong>Bilheteria: </strong> {{ revenue(movie.revenue) }}</p>
+              </v-card-text>
+            </v-col>
+            <v-col cols="12" md="4">
+              <v-card-text>
+                <p><strong>Gêneros</strong></p>
+                <v-chip v-for="genre in movie.genres" :key="genre.id" class="ma-1">
+                  {{ genre.name }}
+                </v-chip>
 
-          <v-card-text>
-            <p>Duração: {{ runtime(movie.runtime) }}</p>
-            <p>Data de lançamento: {{ formatDate(movie.release_date) }}</p>
-            <p>Produzido por: {{ madeBy(movie.production_companies) }}</p>
-            <p>Bilheteria: {{ revenue(movie.revenue) }}</p>
-            <v-chip outlined v-for="genre in movie.genres" :key="genre.id">{{ genre.name }}</v-chip>
-          </v-card-text>
+                <p class="mt-3"><strong>Palavras chaves</strong></p>
+                <v-chip
+                  v-for="keyword in keywords"
+                  :key="keyword.id"
+                  class="ma-1"
+                  :style="{ cursor: 'pointer' }"
+                >
+                  <router-link :to="{ name: 'keyword', params: { keyword: keyword.id } }">
+                    {{ keyword.name }}
+                  </router-link>
+                </v-chip>
+              </v-card-text>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
@@ -54,7 +80,8 @@
         <v-card-text class="text-justify">
           <p>{{ person.details.biography }}</p>
           <p v-show="person.details.birthday">
-            Nasceu em: {{ formatDate(person.details.birthday) }} | {{ age(person.details.birthday) }} anos
+            Nasceu em: {{ formatDate(person.details.birthday) }} |
+            {{ age(person.details.birthday) }} anos
           </p>
           <p v-show="person.details.deathday">
             Morreu em: {{ formatDate(person.details.deathday) }}
@@ -77,6 +104,7 @@ export default {
     return {
       movie: {},
       cast: [],
+      keywords: [],
       person: {
         loading: false,
         dialog: false,
@@ -93,12 +121,20 @@ export default {
         : require('../assets/placeholder-profile.jpg');
     },
 
+    queryString(query) {
+      return new URLSearchParams({
+        api_key: process.env.VUE_APP_TMDB_API_KEY,
+        language: 'pt-BR',
+        ...query,
+      }).toString();
+    },
+
     formatDate(date) {
       return new Date(date).toLocaleDateString();
     },
 
     age(birthday) {
-      return (new Date()).getFullYear() - Number(birthday?.split('-')[0]);
+      return new Date().getFullYear() - Number(birthday?.split('-')[0]);
     },
 
     runtime(minutes) {
@@ -120,45 +156,51 @@ export default {
       this.person.dialog = true;
       this.person.loading = true;
 
-      const queryString = new URLSearchParams({
-        api_key: process.env.VUE_APP_TMDB_API_KEY,
-        language: 'pt-BR',
-      });
+      let url = `${this.$apiBaseUrl}/person/${id}?${this.queryString()}`;
 
-      const urlPersonDetails = `${this.$apiBaseUrl}/person/${id}?${queryString.toString()}`;
-
-      fetch(urlPersonDetails)
+      fetch(url)
         .then((response) => response.json())
         .then((data) => {
           this.person.details = data;
           this.person.loading = false;
-          console.log(data);
+        });
+    },
+
+    movieInfo() {
+      let url = `${this.$apiBaseUrl}/movie/${this.$route.params.id}?${this.queryString()}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.movie = data;
+        });
+    },
+
+    movieCast() {
+      let url = `${this.$apiBaseUrl}/movie/${this.$route.params.id}/credits?${this.queryString()}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.cast = data.cast;
+        });
+    },
+
+    movieKeywords() {
+      let url = `${this.$apiBaseUrl}/movie/${this.$route.params.id}/keywords?${this.queryString()}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.keywords = data.keywords;
         });
     },
   },
 
   created() {
-    const queryString = new URLSearchParams({
-      api_key: process.env.VUE_APP_TMDB_API_KEY,
-      language: 'pt-BR',
-    });
-
-    const urlMovie = `${this.$apiBaseUrl}/movie/${this.$route.params.id}?${queryString.toString()}`;
-    const urlMovieCast = `
-      ${this.$apiBaseUrl}/movie/${this.$route.params.id}/credits?${queryString.toString()}
-    `;
-
-    fetch(urlMovie)
-      .then((response) => response.json())
-      .then((data) => {
-        this.movie = data;
-      });
-
-    fetch(urlMovieCast)
-      .then((response) => response.json())
-      .then((data) => {
-        this.cast = data.cast;
-      });
+    this.movieKeywords();
+    this.movieInfo();
+    this.movieCast();
   },
 };
 </script>

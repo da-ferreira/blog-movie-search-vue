@@ -16,11 +16,11 @@ const routes = [
     name: 'showMovie',
     component: () => import('../components/Movie.vue'),
   },
-  // {
-  //   path: '/search',
-  //   name: 'search',
-  //   component: () => import('../views/layout/Main.vue'),
-  // },
+  {
+    path: '/keyword/:keyword',
+    name: 'keyword',
+    component: () => import('../components/Keyword.vue'),
+  },
   {
     path: '*',
     name: 'pageNotFound',
