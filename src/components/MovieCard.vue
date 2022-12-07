@@ -2,7 +2,7 @@
   <div>
     <v-card outlined max-width="20rem" min-height="28rem" class="ma-2" elevation="2">
       <v-hover v-slot="{ hover }">
-        <v-img :src="thumbnail" height="250" width="320" :class="{ 'hover-image': hover }">
+        <v-img :src="getThumbnail(thumbnail)" height="250" width="320" :class="{ 'hover-image': hover }">
           <div class="text-center">
             <v-btn icon v-if="hover" class="show-btn" @click="expandImage = true">
               <v-icon> mdi-arrow-expand-all </v-icon>
@@ -36,12 +36,20 @@
 
 <script>
 export default {
-  name: 'PostCard',
+  name: 'MovieCard',
 
   data() {
     return {
       expandImage: false,
     };
+  },
+
+  methods: {
+    getThumbnail(path) {
+      return path
+        ? `${this.$apiImageBaseUrl}/original${path}`
+        : require('../assets/placeholder.png');
+    },
   },
 
   props: {
