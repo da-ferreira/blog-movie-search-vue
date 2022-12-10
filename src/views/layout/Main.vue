@@ -13,48 +13,30 @@
       </v-col>
     </v-row>
 
-    <template v-if="totalResults > 0">
-      <h4 class="grey--text text-center">{{ totalResults }} filmes</h4>
-      <div class="d-flex flex-row flex-wrap justify-center">
-        <div v-for="movie in movies" :key="movie.id">
-          <PostCard
-            :id="movie.id"
-            :title="movie.title"
-            :description="movie.overview"
-            :thumbnail="getThumbnail(movie.poster_path)"
-          />
-        </div>
-      </div>
+    <Cards :movies="movies" :length="totalResults" />
 
-      <div class="text-center my-3" v-show="currentPage < totalPages">
-        <v-btn
-          outlined
-          rounded
-          :loading="loadingMoreResults"
-          :icon="loadingMoreResults"
-          @click="moreResults()"
-          >Mais resultados</v-btn
-        >
-      </div>
-    </template>
-
-    <template v-else>
-      <div class="grey--text text-center">
-        <h1 class="font-weight-bold">Sem resultados</h1>
-        <v-icon x-large>mdi-movie-open-off-outline</v-icon>
-      </div>
-    </template>
+    <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
+      <v-btn
+        outlined
+        rounded
+        :loading="loadingMoreResults"
+        :icon="loadingMoreResults"
+        @click="moreResults()"
+      >
+        Mais resultados
+      </v-btn>
+    </div>
   </v-main>
 </template>
 
 <script>
-import PostCard from '../../components/PostCard.vue';
+import Cards from '@/components/Cards.vue';
 
 export default {
   name: 'Main',
 
   components: {
-    PostCard,
+    Cards,
   },
 
   data() {
@@ -64,9 +46,11 @@ export default {
       movies: [],
       loadingSearch: false,
       loadingMoreResults: false,
-      currentPage: 0,
-      totalPages: 0,
       totalResults: 0,
+      page: {
+        current: 0,
+        total: 0,
+      },
     };
   },
 
@@ -95,15 +79,15 @@ export default {
       });
 
       const url = `${this.$apiBaseUrl}/search/movie?${queryString.toString()}`;
-      
+
       this.loadingSearch = true;
 
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
           this.movies = this.movies.concat(data.results);
-          this.totalPages = data.total_pages;
-          this.currentPage = data.page;
+          this.page.total = data.total_pages;
+          this.page.current = data.page;
           this.totalResults = data.total_results;
           this.loadingSearch = false;
           this.loadingMoreResults = false;
@@ -111,15 +95,9 @@ export default {
         .catch((err) => console.error(err));
     },
 
-    getThumbnail(path) {
-      return path
-        ? `${this.$apiImageBaseUrl}/original${path}`
-        : require('../../assets/placeholder.png');
-    },
-
     moreResults() {
       this.loadingMoreResults = true;
-      this.searchMovies(this.search, this.currentPage + 1);
+      this.searchMovies(this.search, this.page.current + 1);
     },
   },
 
