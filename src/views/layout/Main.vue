@@ -13,9 +13,9 @@
       </v-col>
     </v-row>
 
-    <Cards :movies="movies" />
+    <Cards :movies="movies" :length="totalResults" />
 
-    <div class="text-center my-3" v-show="page.current < page.total">
+    <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
       <v-btn
         outlined
         rounded
@@ -30,15 +30,12 @@
 </template>
 
 <script>
-// import MovieCard from '../../components/MovieCard.vue';
-// import Cards from '../../components/Cards.vue';
 import Cards from '@/components/Cards.vue';
 
 export default {
   name: 'Main',
 
   components: {
-    // MovieCard,
     Cards,
   },
 

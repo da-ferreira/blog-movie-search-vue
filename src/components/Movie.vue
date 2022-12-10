@@ -3,13 +3,13 @@
     <v-row>
       <v-col sm="7" cols="12" md="4" min-width="60%">
         <v-img
-          :src="image(movie.poster_path)"
+          :src="image(movie.poster_path, 'placeholder.png')"
           height="95vh"
           alt="Movie image"
           class="rounded-lg"
         ></v-img>
       </v-col>
-
+      <!-- Elenco -->
       <v-col sm="5" cols="12" md="8">
         <h2 class="ma-2">Elenco do filme</h2>
 
@@ -21,6 +21,7 @@
               class="ma-2"
               width="150"
               height="auto"
+              outlined
               @click="personDetails(person.id)"
             >
               <v-img height="150" width="150" :src="image(person.profile_path)"></v-img>
@@ -32,7 +33,7 @@
           </div>
         </div>
       </v-col>
-
+      <!-- Descrição -->
       <v-col>
         <v-card outlined tile class="rounded-lg">
           <v-row>
@@ -74,6 +75,30 @@
       </v-col>
     </v-row>
 
+    <v-divider class="my-5"></v-divider>
+    <!-- Recomendações -->
+    <section>
+      <h2>Recomendações</h2>
+
+      <div class="d-flex flex-row overflow-x-auto recommendations">
+        <div v-for="(recommendation, index) in recommendations" :key="index">
+          <router-link :to="{ name: 'showMovie', params: { id: recommendation.id } }">
+            <v-card class="ma-2 rounded-lg" width="250" height="auto" outlined>
+              <v-img
+                height="140"
+                width="250"
+                :src="image(recommendation.backdrop_path, 'placeholder.png')"
+                contain
+              ></v-img>
+              <v-card-text class="text-center pa-1">
+                <h4 class="line-clamp-1">{{ recommendation.title }}</h4>
+              </v-card-text>
+            </v-card>
+          </router-link>
+        </div>
+      </div>
+    </section>
+    <!-- Detalhes de uma pessoa -->
     <v-dialog v-model="person.dialog" max-width="700">
       <v-card :loading="person.loading">
         <v-card-title>{{ person.details.name }}</v-card-title>
@@ -105,6 +130,7 @@ export default {
       movie: {},
       cast: [],
       keywords: [],
+      recommendations: [],
       person: {
         loading: false,
         dialog: false,
@@ -115,10 +141,10 @@ export default {
   },
 
   methods: {
-    image(path) {
+    image(path, placeholder = 'placeholder-profile.jpg') {
       return path
         ? `${this.$apiImageBaseUrl}/original${path}`
-        : require('../assets/placeholder-profile.jpg');
+        : require(`../assets/${placeholder}`);
     },
 
     queryString(query) {
@@ -195,12 +221,35 @@ export default {
           this.keywords = data.keywords;
         });
     },
+
+    movieRecommendations() {
+      let url = `${this.$apiBaseUrl}/movie/${
+        this.$route.params.id
+      }/recommendations?${this.queryString()}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          this.recommendations = data.results;
+        });
+    },
   },
 
   created() {
     this.movieKeywords();
     this.movieInfo();
     this.movieCast();
+    this.movieRecommendations();
+  },
+
+  watch: {
+    '$route.params.id'() {
+      this.movieKeywords();
+      this.movieInfo();
+      this.movieCast();
+      this.movieRecommendations();
+      scrollTo(0, 0);
+    },
   },
 };
 </script>
@@ -212,5 +261,29 @@ export default {
 
 .cast::-webkit-scrollbar {
   width: 0rem;
+}
+
+.recommendations::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+.recommendations::-webkit-scrollbar {
+  height: 0.6rem;
+  background-color: #ffffff;
+}
+
+.recommendations::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #dbdbdb;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  white-space: normal;
 }
 </style>

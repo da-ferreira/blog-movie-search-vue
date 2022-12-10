@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <v-card outlined max-width="20rem" min-height="28rem" class="ma-2" elevation="2">
-      <v-hover v-slot="{ hover }">
-        <v-img :src="getThumbnail(thumbnail)" height="250" width="320" :class="{ 'hover-image': hover }">
+  <v-hover v-slot="{ hover }">
+    <div>
+      <v-card outlined max-width="20rem" min-height="28rem" class="ma-2" :elevation="hover ? 1 : 0">
+        <v-img
+          :src="getThumbnail(thumbnail)"
+          height="250"
+          width="320"
+          :class="{ 'hover-image': hover }"
+        >
           <div class="text-center">
             <v-btn icon v-if="hover" class="show-btn" @click="expandImage = true">
               <v-icon> mdi-arrow-expand-all </v-icon>
@@ -10,28 +15,28 @@
             </v-btn>
           </div>
         </v-img>
-      </v-hover>
 
-      <v-card-title class="title">
-        <span class="line-clamp-2">{{ title }}</span>
-      </v-card-title>
-      <v-card-text class="description">
-        <span class="line-clamp-3">{{ description }}</span>
-      </v-card-text>
-      <v-card-actions>
-        <router-link :to="{ name: 'showMovie', params: { id } }">
-          <v-btn outlined rounded text>Mais detalhes</v-btn>
-        </router-link>
-      </v-card-actions>
-    </v-card>
+        <v-card-title class="title">
+          <span class="line-clamp-2">{{ title }}</span>
+        </v-card-title>
+        <v-card-text class="description">
+          <span class="line-clamp-3">{{ description }}</span>
+        </v-card-text>
+        <v-card-actions>
+          <router-link :to="{ name: 'showMovie', params: { id } }">
+            <v-btn outlined rounded text>Mais detalhes</v-btn>
+          </router-link>
+        </v-card-actions>
+      </v-card>
 
-    <div v-if="expandImage" class="expand-image">
-      <v-img :src="thumbnail" contain height="100vh" class="pa-1"></v-img>
-      <v-btn class="close-expand-image" icon @click="expandImage = false">
-        <v-icon x-large>mdi-close</v-icon>
-      </v-btn>
+      <div v-if="expandImage" class="expand-image">
+        <v-img :src="getThumbnail(thumbnail)" contain height="100vh" class="pa-1"></v-img>
+        <v-btn class="close-expand-image" icon @click="expandImage = false">
+          <v-icon x-large>mdi-close</v-icon>
+        </v-btn>
+      </div>
     </div>
-  </div>
+  </v-hover>
 </template>
 
 <script>
