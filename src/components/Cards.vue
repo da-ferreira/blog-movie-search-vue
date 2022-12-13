@@ -17,7 +17,12 @@
     <template v-else>
       <div class="grey--text text-center">
         <h1 class="font-weight-bold">Sem resultados</h1>
-        <v-icon x-large>mdi-movie-open-off-outline</v-icon>
+        <v-img
+          alt="Home"
+          contain
+          src="../assets/no-results.jpg"
+          height="90vh"
+        />
       </div>
     </template>
   </section>

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="grey lighten-5">
+  <v-container fluid class="grey lighten-5 mt-15">
     <v-row>
       <v-col sm="7" cols="12" md="4" min-width="60%">
         <v-img

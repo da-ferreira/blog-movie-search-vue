@@ -1,31 +1,31 @@
 <template>
   <v-main class="ma-3">
-    <v-row justify="center">
-      <v-col cols="12" md="4">
-        <v-text-field
-          color="success"
-          label="Busque por filmes"
-          prepend-icon="mdi-magnify"
-          v-model="search"
-          @keyup="lazySearch()"
-          :loading="loadingSearch"
-        ></v-text-field>
-      </v-col>
-    </v-row>
+    <template v-if="$route.query.q && loading">
+      <Cards :movies="movies" :length="totalResults" />
 
-    <Cards :movies="movies" :length="totalResults" />
+      <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
+        <v-btn
+          outlined
+          rounded
+          :loading="loadingMoreResults"
+          :icon="loadingMoreResults"
+          @click="moreResults()"
+        >
+          Mais resultados
+        </v-btn>
+      </div>
+    </template>
 
-    <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
-      <v-btn
-        outlined
-        rounded
-        :loading="loadingMoreResults"
-        :icon="loadingMoreResults"
-        @click="moreResults()"
-      >
-        Mais resultados
-      </v-btn>
-    </div>
+    <template v-else>
+      <div class="d-flex justify-center">
+        <v-img
+          alt="Home"
+          contain
+          src="../../assets/home.jpg"
+          height="90vh"
+        />
+      </div>
+    </template>
   </v-main>
 </template>
 
@@ -41,11 +41,10 @@ export default {
 
   data() {
     return {
-      search: '',
       timeout: null,
       movies: [],
-      loadingSearch: false,
       loadingMoreResults: false,
+      loading: false,
       totalResults: 0,
       page: {
         current: 0,
@@ -55,32 +54,21 @@ export default {
   },
 
   methods: {
-    lazySearch() {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(
-        () => this.$router.push({ name: 'home', query: { q: this.search } }),
-        800
-      );
-    },
-
     searchMovies(search, page = 1) {
       if (!search) {
         this.movies = [];
         return;
       }
 
-      this.search = search;
-
       const queryString = new URLSearchParams({
         api_key: process.env.VUE_APP_TMDB_API_KEY,
         language: 'pt-BR',
-        query: this.search,
+        query: search,
         page,
       });
 
       const url = `${this.$apiBaseUrl}/search/movie?${queryString.toString()}`;
-
-      this.loadingSearch = true;
+      this.loading = false;
 
       fetch(url)
         .then((response) => response.json())
@@ -89,15 +77,15 @@ export default {
           this.page.total = data.total_pages;
           this.page.current = data.page;
           this.totalResults = data.total_results;
-          this.loadingSearch = false;
           this.loadingMoreResults = false;
+          this.loading = true;
         })
         .catch((err) => console.error(err));
     },
 
     moreResults() {
       this.loadingMoreResults = true;
-      this.searchMovies(this.search, this.page.current + 1);
+      this.searchMovies(this.$route.query.q, this.page.current + 1);
     },
   },
 

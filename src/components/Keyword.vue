@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="grey lighten-5">
+  <v-container fluid class="grey lighten-5 mt-15">
     <v-banner single-line class="mb-2">
       <h1 class="mb-1">{{ keyword.name }}</h1>
     </v-banner>
