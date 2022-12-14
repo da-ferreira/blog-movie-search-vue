@@ -1,6 +1,6 @@
 <template>
   <v-main class="ma-3">
-    <template v-if="$route.query.q && loading">
+    <template v-if="$route.query.q">
       <Cards :movies="movies" :length="totalResults" />
 
       <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
@@ -44,7 +44,6 @@ export default {
       timeout: null,
       movies: [],
       loadingMoreResults: false,
-      loading: false,
       totalResults: 0,
       page: {
         current: 0,
@@ -68,7 +67,7 @@ export default {
       });
 
       const url = `${this.$apiBaseUrl}/search/movie?${queryString.toString()}`;
-      this.loading = false;
+      this.loadingMoreResults = false;
 
       fetch(url)
         .then((response) => response.json())
@@ -78,7 +77,6 @@ export default {
           this.page.current = data.page;
           this.totalResults = data.total_results;
           this.loadingMoreResults = false;
-          this.loading = true;
         })
         .catch((err) => console.error(err));
     },

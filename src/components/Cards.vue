@@ -15,14 +15,9 @@
     </template>
 
     <template v-else>
-      <div class="grey--text text-center">
-        <h1 class="font-weight-bold">Sem resultados</h1>
-        <v-img
-          alt="Home"
-          contain
-          src="../assets/no-results.jpg"
-          height="90vh"
-        />
+      <div class="text-center">
+        <v-img alt="Home" contain src="../assets/no-results.jpg" height="70vh" />
+        <h1>Sem resultados</h1>
       </div>
     </template>
   </section>
