@@ -77,7 +77,7 @@
 
     <v-divider class="my-5"></v-divider>
     <!-- Recomendações -->
-    <section>
+    <section v-if="recommendations.length > 0">
       <h2>Recomendações</h2>
 
       <div class="d-flex flex-row overflow-x-auto recommendations">

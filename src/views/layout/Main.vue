@@ -17,13 +17,14 @@
     </template>
 
     <template v-else>
-      <div class="d-flex justify-center">
+      <div class="text-center">
         <v-img
           alt="Home"
           contain
           src="../../assets/home.jpg"
-          height="90vh"
+          height="70vh"
         />
+        <h1 class="grey--text">Pesquise por filmes e descubra novidades</h1>
       </div>
     </template>
   </v-main>

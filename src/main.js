@@ -2,7 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import router from './router'
-import './mixin/generalMixin';
 
 Vue.config.productionTip = false
 Vue.prototype.$apiBaseUrl = 'https://api.themoviedb.org/3';
