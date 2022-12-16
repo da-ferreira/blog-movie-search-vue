@@ -1,7 +1,7 @@
 <template>
   <v-main class="ma-3">
     <template v-if="$route.query.q">
-      <Cards :movies="movies" :length="totalResults" />
+      <Cards :items="movies" :length="totalResults" />
 
       <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
         <v-btn
@@ -67,7 +67,7 @@ export default {
         page,
       });
 
-      const url = `${this.$apiBaseUrl}/search/movie?${queryString.toString()}`;
+      const url = `${this.$apiBaseUrl}/search/multi?${queryString.toString()}`;
       this.loadingMoreResults = false;
 
       fetch(url)

@@ -8,6 +8,10 @@
           width="320"
           :class="{ 'hover-image': hover }"
         >
+          <v-chip label :color="mediaTypes[mediaType].color">
+            {{ mediaTypes[mediaType].name }}
+          </v-chip>
+
           <div class="text-center">
             <v-btn icon v-if="hover" class="show-btn" @click="expandImage = true">
               <v-icon> mdi-arrow-expand-all </v-icon>
@@ -41,11 +45,25 @@
 
 <script>
 export default {
-  name: 'MovieCard',
+  name: 'Card',
 
   data() {
     return {
       expandImage: false,
+      mediaTypes: {
+        tv: {
+          name: 'Programa de TV',
+          color: 'primary',
+        },
+        person: {
+          name: 'Pessoa',
+          color: 'primary',
+        },
+        movie: {
+          name: 'Filme',
+          color: 'primary',
+        },
+      },
     };
   },
 
@@ -74,6 +92,11 @@ export default {
     },
 
     thumbnail: {
+      type: String,
+      required: true,
+    },
+
+    mediaType: {
       type: String,
       required: true,
     },

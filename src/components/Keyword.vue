@@ -4,7 +4,7 @@
       <h1 class="mb-2">{{ keyword.name }}</h1>
     </v-banner>
 
-    <Cards :movies="movies" :length="totalResults" />
+    <Cards :items="movies" :length="totalResults" />
 
     <div class="text-center my-3" v-show="totalResults > 0 && page.current < page.total">
       <v-btn
