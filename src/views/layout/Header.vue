@@ -18,7 +18,7 @@
       <v-col cols="6">
         <v-text-field
           color="cyan"
-          label="Pesquise por filmes"
+          label="Pesquise por filmes, programas de tv e pessoas"
           single-line
           clearable
           prepend-inner-icon="mdi-magnify"

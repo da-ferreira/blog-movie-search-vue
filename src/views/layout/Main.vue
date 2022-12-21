@@ -24,7 +24,7 @@
           src="../../assets/home.jpg"
           height="70vh"
         />
-        <h1 class="grey--text">Pesquise por filmes e descubra novidades</h1>
+        <h1 class="grey--text">Pesquise por filmes, programas de tv e pessoas</h1>
       </div>
     </template>
   </v-main>
