@@ -11,7 +11,7 @@
       </v-col>
       <!-- Elenco -->
       <v-col sm="5" cols="12" md="8">
-        <h2 class="ma-2">Elenco do filme</h2>
+        <h2 class="ma-2">Elenco</h2>
 
         <div class="overflow-y-auto cast">
           <div class="d-flex flex-row flex-wrap justify-center">
@@ -38,16 +38,16 @@
         <v-card outlined tile class="rounded-lg">
           <v-row>
             <v-col cols="12" md="8">
-              <v-card-title>{{ movie.title }}</v-card-title>
+              <v-card-title>{{ movie.original_name }}</v-card-title>
               <v-card-text>
                 <p>{{ movie.overview }}</p>
               </v-card-text>
 
               <v-card-text>
-                <p><strong>Duração: </strong> {{ runtime(movie.runtime) }}</p>
-                <p><strong>Data de lançamento: </strong>{{ formatDate(movie.release_date) }}</p>
+                <p><strong>Data da última exibição: </strong> {{ formatDate(movie.last_air_date) }}</p>
+                <p><strong>Data do primeiro episódio: </strong>{{ formatDate(movie.first_air_date) }}</p>
                 <p><strong>Produzido por: </strong>{{ madeBy(movie.production_companies) }}</p>
-                <p><strong>Bilheteria: </strong> {{ revenue(movie.revenue) }}</p>
+                <!-- <p><strong>Bilheteria: </strong> {{ revenue(movie.revenue) }}</p> -->
               </v-card-text>
             </v-col>
             <v-col cols="12" md="4">
@@ -82,7 +82,7 @@
 
       <div class="d-flex flex-row overflow-x-auto recommendations">
         <div v-for="(recommendation, index) in recommendations" :key="index">
-          <router-link :to="{ name: 'movie', params: { id: recommendation.id } }">
+          <router-link :to="{ name: 'tv', params: { id: recommendation.id } }">
             <v-card class="ma-2 rounded-lg" width="250" height="auto" outlined>
               <v-img
                 height="140"
@@ -91,7 +91,7 @@
                 contain
               ></v-img>
               <v-card-text class="text-center pa-1">
-                <h4 class="line-clamp-1">{{ recommendation.title }}</h4>
+                <h4 class="line-clamp-1">{{ recommendation.name }}</h4>
               </v-card-text>
             </v-card>
           </router-link>
@@ -123,7 +123,7 @@
 
 <script>
 export default {
-  name: 'Movie',
+  name: 'TvProgram',
 
   data() {
     return {
@@ -193,7 +193,7 @@ export default {
     },
 
     movieInfo() {
-      let url = `${this.$apiBaseUrl}/movie/${this.$route.params.id}?${this.queryString()}`;
+      let url = `${this.$apiBaseUrl}/tv/${this.$route.params.id}?${this.queryString()}`;
 
       fetch(url)
         .then((response) => response.json())
@@ -203,7 +203,7 @@ export default {
     },
 
     movieCast() {
-      let url = `${this.$apiBaseUrl}/movie/${this.$route.params.id}/credits?${this.queryString()}`;
+      let url = `${this.$apiBaseUrl}/tv/${this.$route.params.id}/credits?${this.queryString()}`;
 
       fetch(url)
         .then((response) => response.json())
@@ -213,17 +213,17 @@ export default {
     },
 
     movieKeywords() {
-      let url = `${this.$apiBaseUrl}/movie/${this.$route.params.id}/keywords?${this.queryString()}`;
+      let url = `${this.$apiBaseUrl}/tv/${this.$route.params.id}/keywords?${this.queryString()}`;
 
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          this.keywords = data.keywords;
+          this.keywords = data.results;
         });
     },
 
     movieRecommendations() {
-      let url = `${this.$apiBaseUrl}/movie/${
+      let url = `${this.$apiBaseUrl}/tv/${
         this.$route.params.id
       }/recommendations?${this.queryString()}`;
 

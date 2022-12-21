@@ -13,13 +13,18 @@ const routes = [
   },
   {
     path: '/movie/:id',
-    name: 'showMovie',
+    name: 'movie',
     component: () => import('../components/Movie.vue'),
   },
   {
     path: '/keyword/:keyword',
     name: 'keyword',
     component: () => import('../components/Keyword.vue'),
+  },
+  {
+    path: '/tv-program/:id',
+    name: 'tv',
+    component: () => import('../components/TvProgram.vue'),
   },
   {
     path: '*',

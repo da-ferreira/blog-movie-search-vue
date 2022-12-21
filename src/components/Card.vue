@@ -27,7 +27,7 @@
           <span class="line-clamp-3">{{ description }}</span>
         </v-card-text>
         <v-card-actions>
-          <router-link :to="{ name: 'showMovie', params: { id } }">
+          <router-link :to="{ name: mediaTypes[mediaType].route, params: { id } }">
             <v-btn outlined rounded text>Mais detalhes</v-btn>
           </router-link>
         </v-card-actions>
@@ -54,14 +54,17 @@ export default {
         tv: {
           name: 'Programa de TV',
           color: 'primary',
+          route: 'tv',
         },
         person: {
           name: 'Pessoa',
           color: 'primary',
+          route: 'person',
         },
         movie: {
           name: 'Filme',
           color: 'primary',
+          route: 'movie',
         },
       },
     };
