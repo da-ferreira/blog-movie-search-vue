@@ -1,6 +1,6 @@
 # Blog de busca de filmes usando api do IMDB
 
-`Veja o projeto:` https://main--gentle-begonia-575151.netlify.app/
+`Veja o projeto:` https://blog-movies.netlify.app/
 
 #### Faça uma cópia do arquivo .env.example para .env e adicione a [chave da api do TMDB](https://developers.themoviedb.org/3/getting-started/introduction) em *VUE_APP_TMDB_API_KEY*
 
